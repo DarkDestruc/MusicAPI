@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using MusicAPI.Models;
 using System.Reflection;
@@ -37,5 +38,37 @@ namespace MusicAPI.Controllers
             return _songs;
         }
 
+        [HttpGet("{id}")]
+        public Song GetSongById(int id)
+        {
+            return _songs.Find (song => song.Id == id);
+             
+        }
+
+        [HttpPost]
+        public IActionResult SaveSong([FromBody] Song newSong)
+        { 
+        _songs.Add(newSong);
+            return Ok();
+        }
+
+        [HttpPut("{id}/{newTitle}")]
+        public ActionResult UpdateSongTitle(int id, string newTitle)
+        {
+            var song = _songs.Find(song => song.Id == id);
+            song .Title= newTitle;
+
+            return Ok();
+        }
+
+        [HttpPut("{id}")]
+        public ActionResult UpdateSong(int id,[FromBody] Song updateSong)
+        {
+            var song = _songs.Find(song => song.Id == id);
+            song.Title = updateSong.Title;
+            song.Language= updateSong.Language;
+
+            return Ok();
+        }
     }
 }
