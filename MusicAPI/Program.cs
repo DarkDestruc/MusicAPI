@@ -12,6 +12,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ApiDbContext>(options => options.UseSqlServer(@"Data Source= (localdb)\MSSQLLocalDB; Initial Catalog = MusicDb;"));
 
 var app = builder.Build();
+using (var scope=app.Services.CreateScope())
+{
+    var dbContext=scope.ServiceProvider.GetRequiredService<ApiDbContext>();
+    //use context
+    dbContext.Database.EnsureCreated();
+}
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using MusicAPI.Data;
 using MusicAPI.Models;
-using System.Reflection;
+
+// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MusicAPI.Controllers
 {
@@ -10,65 +10,51 @@ namespace MusicAPI.Controllers
     [ApiController]
     public class SongsController : ControllerBase
     {
-        private static List<Song> _songs = new List<Song>
-        {
-        new Song
-        {
-            Id = 1,
-            Title = "Yeah",
-            Language = "English",
-        },
-        new Song
-        {
-            Id = 2,
-            Title = "Still Waiting",
-            Language="English",
-        },
-        new Song
-        {
-            Id=3,
-            Title = "Entre Nosotros",
-            Language = "Spanish",
-        },
-        };
+        private readonly ApiDbContext dbContext;
 
+        public SongsController(ApiDbContext dbContext)
+        {
+            this.dbContext = dbContext;
+        }
+        // GET: api/<SongsController>
         [HttpGet]
-        public IEnumerable<Song> GetAllSongs()
+        public IEnumerable<Song> Get()
         {
-            return _songs;
+            return dbContext.Songs;
         }
 
+        // GET api/<SongsController>/5
         [HttpGet("{id}")]
-        public Song GetSongById(int id)
+        public Song Get(int id)
         {
-            return _songs.Find (song => song.Id == id);
-             
+            return dbContext.Songs.Find(id);
         }
 
+        // POST api/<SongsController>
         [HttpPost]
-        public IActionResult SaveSong([FromBody] Song newSong)
-        { 
-        _songs.Add(newSong);
-            return Ok();
-        }
-
-        [HttpPut("{id}/{newTitle}")]
-        public ActionResult UpdateSongTitle(int id, string newTitle)
+        public ActionResult Post([FromBody] Song newSong)
         {
-            var song = _songs.Find(song => song.Id == id);
-            song .Title= newTitle;
-
+            dbContext.Songs.Add(newSong);
+            dbContext.SaveChanges();
             return Ok();
         }
 
+        // PUT api/<SongsController>/5
         [HttpPut("{id}")]
-        public ActionResult UpdateSong(int id,[FromBody] Song updateSong)
+        public void Put(int id, [FromBody] string value)
         {
-            var song = _songs.Find(song => song.Id == id);
-            song.Title = updateSong.Title;
-            song.Language= updateSong.Language;
+        }
 
-            return Ok();
+        // DELETE api/<SongsController>/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+            var SongToDelete = dbContext.Songs.Find(id);
+            if(SongToDelete != null)
+            {
+                dbContext.Remove(SongToDelete);
+                dbContext.SaveChanges();
+            }
         }
     }
 }
