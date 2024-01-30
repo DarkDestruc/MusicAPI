@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MusicAPI.Data;
 using MusicAPI.Models;
+using MusicAPI.DTO;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -32,9 +33,15 @@ namespace MusicAPI.Controllers
 
         // POST api/<SongsController>
         [HttpPost]
-        public ActionResult Post([FromBody] Song newSong)
+        public ActionResult Post([FromBody] SongDto newSong)
         {
-            dbContext.Songs.Add(newSong);
+            var song = new Song
+            {
+                Title = newSong.Title,
+                Language = newSong.Language,
+
+            };
+            dbContext.Songs.Add(song);
             dbContext.SaveChanges();
             return Ok();
         }
